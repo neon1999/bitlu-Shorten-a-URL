@@ -1,0 +1,98 @@
+<div class="page-shell">
+	<header class="topbar">
+		<a class="brand" href="#top" aria-label="Linklet home">
+			<span class="brand-mark" aria-hidden="true"><span></span><span></span></span>
+			<span>linklet</span>
+		</a>
+		<p class="topbar-note"><span class="status-dot"></span> YOUR LINK WORKSPACE</p>
+	</header>
+
+	<main id="top" class="main-layout">
+		<section class="create-section" aria-labelledby="page-title">
+			<div class="section-kicker"><span>01</span><span class="kicker-line"></span> CREATE A SHORT LINK</div>
+			<h1 id="page-title">Long link?<br /><span>Not for long.</span></h1>
+			<p class="intro-copy">Make any destination easier to share.</p>
+
+			<form class="shorten-form" (submit)="$event.preventDefault(); shortenUrl()">
+				<label for="destination-url">Destination URL</label>
+				<div class="input-row" [class.input-invalid]="errorMessage()">
+					<span class="input-prefix" aria-hidden="true">↗</span>
+					<input
+						id="destination-url"
+						type="text"
+						inputmode="url"
+						autocomplete="url"
+						spellcheck="false"
+						placeholder="your-long-url.com/page"
+						[value]="originalUrl()"
+						(input)="updateInput($event)"
+						[attr.aria-invalid]="errorMessage() ? 'true' : null"
+						aria-describedby="form-message"
+					/>
+				</div>
+				<div id="form-message" class="form-message" aria-live="polite">
+					@if (errorMessage()) {
+						<span class="error-text">{{ errorMessage() }}</span>
+					} @else {
+						<span>Paste a URL or enter a domain to get started.</span>
+					}
+				</div>
+				<button class="submit-button" type="submit" [disabled]="isSubmitting()">
+					<span>{{ isSubmitting() ? 'Shortening...' : 'Shorten link' }}</span>
+					<span class="submit-arrow" aria-hidden="true">↗</span>
+				</button>
+			</form>
+
+			<section class="result-section" aria-live="polite" aria-label="Shortened link result">
+				<div class="result-heading"><span>YOUR SHORT LINK</span><span class="result-spark" aria-hidden="true">✳</span></div>
+				@if (result(); as shortened) {
+					<div class="result-content">
+						<a class="result-url" [href]="shortened.shortUrl" target="_blank" rel="noopener noreferrer">{{ shortened.shortUrl }}</a>
+						<button class="copy-button" type="button" (click)="copyLink(shortened.shortUrl)">
+							{{ copiedUrl() === shortened.shortUrl ? 'Copied' : 'Copy link' }}
+						</button>
+					</div>
+					<p class="result-destination">{{ shortened.longUrl }}</p>
+				} @else {
+					<p class="result-placeholder">Your new link will appear here.</p>
+				}
+			</section>
+		</section>
+
+		<aside class="history-section" aria-labelledby="history-title">
+			<div class="history-topline">
+				<div class="section-kicker"><span>02</span><span class="kicker-line"></span> YOUR COLLECTION</div>
+				<span class="history-count">{{ linkCount() | number:'2.0-0' }}</span>
+			</div>
+			<div class="history-title-row">
+				<h2 id="history-title">Recent links</h2>
+				<button class="clear-button" type="button" [disabled]="linkCount() === 0" (click)="clearHistory()">Clear</button>
+			</div>
+
+			@if (savedLinks().length) {
+				<ul class="history-list">
+					@for (link of savedLinks(); track link.shortUrl) {
+						<li class="history-item">
+							<div class="history-item-main">
+								<a class="history-short" [href]="link.shortUrl" target="_blank" rel="noopener noreferrer">{{ link.shortUrl }}</a>
+								<p class="history-original" [title]="link.longUrl">{{ link.longUrl }}</p>
+							</div>
+							<div class="history-item-meta">
+								<time>{{ link.createdAt | date:'MMM d' }}</time>
+								<button class="row-copy" type="button" [attr.aria-label]="copiedUrl() === link.shortUrl ? 'Link copied' : 'Copy ' + link.shortUrl" (click)="copyLink(link.shortUrl)">{{ copiedUrl() === link.shortUrl ? 'Copied' : 'Copy' }}</button>
+							</div>
+						</li>
+					}
+				</ul>
+			} @else {
+				<div class="empty-history">
+					<span class="empty-mark" aria-hidden="true">↙</span>
+					<p>Your shortened links<br />will live here.</p>
+				</div>
+			}
+			<p class="history-footnote"><span class="footnote-mark">✳</span> Up to 8 links, saved on this device.</p>
+		</aside>
+	</main>
+
+	<footer class="footer"><span>LINKLET <span class="footer-dot">/</span> MAKE SPACE FOR WHAT MATTERS</span><span>01 — 02</span></footer>
+</div>

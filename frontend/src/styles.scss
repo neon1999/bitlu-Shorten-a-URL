@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+	color-scheme: light;
+	--ink: #1b2822;
+	--green: #255b48;
+	--acid: #d7ed7b;
+	--coral: #e8755d;
+	--muted: #6d7971;
+	--line: #dce2da;
+	--display-font: 'Space Grotesk', 'Trebuchet MS', sans-serif;
+	--body-font: 'DM Sans', 'Segoe UI', sans-serif;
+	font-family: var(--body-font);
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	background: #f4f6f1;
+	color: var(--ink);
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html {
+	min-width: 320px;
+	min-height: 100%;
+	background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.5), transparent 55%);
+}
+
+body {
+	min-width: 320px;
+	min-height: 100vh;
+	margin: 0;
+}
+
+button,
+input {
+	font: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+	outline: 3px solid rgba(232, 117, 93, 0.55);
+	outline-offset: 3px;
+}
