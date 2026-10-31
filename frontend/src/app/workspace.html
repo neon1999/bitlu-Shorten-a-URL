@@ -4,14 +4,12 @@
 			<span class="brand-mark" aria-hidden="true"><span></span><span></span></span>
 			<span class="brand-name">bit<span class="brand-accent">lu</span></span>
 		</a>
-		<p class="topbar-note"><span class="status-dot"></span> YOUR LINK WORKSPACE</p>
 	</header>
 
 	<main id="top" class="main-layout">
 		<section class="create-section" aria-labelledby="page-title">
-			<div class="section-kicker"><span>01</span><span class="kicker-line"></span> CREATE A SHORT LINK</div>
-			<h1 id="page-title">Long link?<br /><span>Not for long.</span></h1>
-			<p class="intro-copy">Make any destination easier to share.</p>
+			<h1 id="page-title">Short links.<br /><span>Big possibilities.</span></h1>
+			<p class="intro-copy">Turn long URLs into short, memorable links. Simple, fast and effortless.</p>
 
 			<form class="shorten-form" (submit)="$event.preventDefault(); shortenUrl()">
 				<label for="destination-url">Destination URL</label>
@@ -23,7 +21,7 @@
 						inputmode="url"
 						autocomplete="url"
 						spellcheck="false"
-						placeholder="your-long-url.com/page"
+						placeholder="Paste your long URL here..."
 						[value]="originalUrl()"
 						(input)="updateInput($event)"
 						[attr.aria-invalid]="errorMessage() ? 'true' : null"
@@ -37,62 +35,88 @@
 						<span>Paste a URL or enter a domain to get started.</span>
 					}
 				</div>
-				<button class="submit-button" type="submit" [disabled]="isSubmitting()">
-					<span>{{ isSubmitting() ? 'Shortening...' : 'Shorten link' }}</span>
+				<div class="custom-url-section">
+					<div class="custom-url-heading">
+						<h2>Customise your link</h2>
+						<p>Make your link memorable with a custom alias.</p>
+					</div>
+					<label class="visually-hidden" for="custom-url">Custom URL alias</label>
+					<div class="custom-url-control">
+						<span class="custom-url-origin" aria-hidden="true">https://bitlu.netlify.app/</span>
+						<input
+							id="custom-url"
+							type="text"
+							maxlength="32"
+							autocomplete="off"
+							spellcheck="false"
+							placeholder="your-custom-alias"
+							[value]="customUrl()"
+							(input)="updateCustomUrl($event)"
+							[attr.aria-invalid]="customUrlCheckState() === 'invalid' || customUrlCheckState() === 'too-short' || customUrlCheckState() === 'taken' || customUrlCheckState() === 'error' ? 'true' : null"
+							aria-describedby="custom-url-message"
+						/>
+						@if (customUrlCheckState() !== 'idle') {
+							<span
+								class="custom-url-indicator"
+								[class.indicator-available]="customUrlCheckState() === 'available'"
+								[class.indicator-unavailable]="customUrlCheckState() === 'invalid' || customUrlCheckState() === 'too-short' || customUrlCheckState() === 'taken' || customUrlCheckState() === 'error'"
+								[class.indicator-checking]="customUrlCheckState() === 'checking'"
+								[attr.title]="customUrlMessage()"
+								aria-hidden="true"
+							>
+								@if (customUrlCheckState() === 'available') { ✓ }
+								@else if (customUrlCheckState() === 'checking') { ... }
+								@else { ! }
+							</span>
+						}
+					</div>
+					<div
+						id="custom-url-message"
+						class="form-message custom-url-message"
+						[class.message-available]="customUrlCheckState() === 'available'"
+						[class.message-unavailable]="customUrlCheckState() === 'taken'"
+						[class.message-checking]="customUrlCheckState() === 'checking'"
+						aria-live="polite"
+					>
+						@if (customUrlCheckState() === 'available') {
+							<span>Custom URL is available</span>
+						} @else if (customUrlCheckState() === 'taken') {
+							<span class="error-text">This custom URL is already taken</span>
+						} @else if (customUrlCheckState() === 'checking') {
+							<span>Checking availability</span>
+						} @else if (customUrlMessage()) {
+							<span [class.error-text]="customUrlCheckState() === 'invalid' || customUrlCheckState() === 'too-short' || customUrlCheckState() === 'error'">{{ customUrlMessage() }}</span>
+						} @else {
+							<span>Use 3 to 32 URL-safe characters. Leave blank for an automatic code.</span>
+						}
+					</div>
+				</div>
+				<button class="submit-button" type="submit" [disabled]="isSubmitting() || isCustomUrlBlocked() || !originalUrl().trim()">
+					<span>{{ isSubmitting() ? 'Shortening...' : 'Shorten URL' }}</span>
 					<span class="submit-arrow" aria-hidden="true">↗</span>
 				</button>
 			</form>
 
-			<section class="result-section" aria-live="polite" aria-label="Shortened link result">
-				<div class="result-heading"><span>YOUR SHORT LINK</span><span class="result-spark" aria-hidden="true">✳</span></div>
-				@if (result(); as shortened) {
+			@if (result(); as shortened) {
+				<section class="result-section" aria-live="polite" aria-label="Shortened link result">
+					<div class="result-success">
+						<span class="success-icon" aria-hidden="true">✓</span>
+						<div>
+							<h2>Your link is ready!</h2>
+							<p>Your new short link is ready to share.</p>
+						</div>
+					</div>
 					<div class="result-content">
 						<a class="result-url" [href]="shortened.shortUrl" target="_blank" rel="noopener noreferrer">{{ shortened.shortUrl }}</a>
-						<button class="copy-button" type="button" (click)="copyLink(shortened.shortUrl)">
-							{{ copiedUrl() === shortened.shortUrl ? 'Copied' : 'Copy link' }}
+						<button class="copy-button" type="button" [attr.aria-label]="copiedUrl() === shortened.shortUrl ? 'Link copied' : 'Copy link'" (click)="copyLink(shortened.shortUrl)">
+							<span class="copy-icon" aria-hidden="true">{{ copiedUrl() === shortened.shortUrl ? '✓' : '▢' }}</span>
+							{{ copiedUrl() === shortened.shortUrl ? 'Copied' : 'Copy' }}
 						</button>
 					</div>
-					<p class="result-destination">{{ shortened.longUrl }}</p>
-				} @else {
-					<p class="result-placeholder">Your new link will appear here.</p>
-				}
-			</section>
-		</section>
-
-		<aside class="history-section" aria-labelledby="history-title">
-			<div class="history-topline">
-				<div class="section-kicker"><span>02</span><span class="kicker-line"></span> YOUR COLLECTION</div>
-				<span class="history-count">{{ linkCount() | number:'2.0-0' }}</span>
-			</div>
-			<div class="history-title-row">
-				<h2 id="history-title">Recent links</h2>
-				<button class="clear-button" type="button" [disabled]="linkCount() === 0" (click)="clearHistory()">Clear</button>
-			</div>
-
-			@if (savedLinks().length) {
-				<ul class="history-list">
-					@for (link of savedLinks(); track link.shortUrl) {
-						<li class="history-item">
-							<div class="history-item-main">
-								<a class="history-short" [href]="link.shortUrl" target="_blank" rel="noopener noreferrer">{{ link.shortUrl }}</a>
-								<p class="history-original" [title]="link.longUrl">{{ link.longUrl }}</p>
-							</div>
-							<div class="history-item-meta">
-								<time>{{ link.createdAt | date:'MMM d' }}</time>
-								<button class="row-copy" type="button" [attr.aria-label]="copiedUrl() === link.shortUrl ? 'Link copied' : 'Copy ' + link.shortUrl" (click)="copyLink(link.shortUrl)">{{ copiedUrl() === link.shortUrl ? 'Copied' : 'Copy' }}</button>
-							</div>
-						</li>
-					}
-				</ul>
-			} @else {
-				<div class="empty-history">
-					<span class="empty-mark" aria-hidden="true">↙</span>
-					<p>Your shortened links<br />will live here.</p>
-				</div>
+					<p class="result-destination" tabindex="0" [title]="shortened.longUrl">{{ shortened.longUrl }}</p>
+					<a class="create-another" href="#destination-url">Create another link</a>
+				</section>
 			}
-			<p class="history-footnote"><span class="footnote-mark">✳</span> Up to 8 links, saved on this device.</p>
-		</aside>
+		</section>
 	</main>
-
-	<footer class="footer"><span>BITLU <span class="footer-dot">/</span> MAKE SPACE FOR WHAT MATTERS</span><span>01 — 02</span></footer>
 </div>

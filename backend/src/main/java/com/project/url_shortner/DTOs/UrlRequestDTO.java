@@ -12,4 +12,5 @@ import lombok.Setter;
 public class UrlRequestDTO {
 
 private String longUrl;
+private String customUrl;
 }

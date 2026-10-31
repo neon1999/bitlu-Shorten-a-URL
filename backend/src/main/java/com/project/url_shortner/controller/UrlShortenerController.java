@@ -20,6 +20,7 @@ import com.project.url_shortner.DTOs.UrlRequestDTO;
 import com.project.url_shortner.DTOs.UrlResponseDTO;
 import com.project.url_shortner.service.UrlShortenerService;
 
+
 @RestController
 @RequestMapping("/")
 @Tag(name = "URL shortener", description = "Create and resolve shortened URLs")
@@ -35,14 +36,15 @@ public class UrlShortenerController {
 	@Operation(summary = "Create a short URL")
 	@ApiResponses({
 			@ApiResponse(responseCode = "201", description = "Short URL created"),
-			@ApiResponse(responseCode = "400", description = "The long URL is missing or blank")
+			@ApiResponse(responseCode = "400", description = "The long URL or custom shortcode is invalid"),
+			@ApiResponse(responseCode = "409", description = "The custom shortcode is already taken")
 	})
 	public ResponseEntity<UrlResponseDTO> createShortUrl(@RequestBody UrlRequestDTO request) {
 		if (request == null || request.getLongUrl() == null || request.getLongUrl().isBlank()) {
 			return ResponseEntity.badRequest().build();
 		}
 
-		String shortCode = urlShortenerService.create(request.getLongUrl());
+		String shortCode = urlShortenerService.create(request.getLongUrl(), request.getCustomUrl());
 		String shortUrl = "https://bitlu.netlify.app/" + shortCode;
 		return ResponseEntity.created(URI.create(shortUrl))
 				.body(new UrlResponseDTO(shortUrl));
@@ -63,4 +65,15 @@ public class UrlShortenerController {
 				.location(URI.create(longUrl))
 				.build();
 	}
+
+
+
+	@GetMapping("/checkCustomUrl/{customUrl}")
+	public ResponseEntity<Boolean> getMethodName(@PathVariable String customUrl) {
+		boolean exists = urlShortenerService.checkIfCustomUrlExist(customUrl);
+		return ResponseEntity.ok(exists ? Boolean.TRUE : Boolean.FALSE);
+	}
+	
+
+
 }
