@@ -40,3 +40,7 @@ launch.json
 
 # Load testing scripts and configuration
 /load-tests/
+
+# Optional database setup and load-test runner
+/database/
+/docker-compose.k6.yml

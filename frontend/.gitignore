@@ -42,3 +42,9 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Optional documentation and editor configuration
+/README.md
+/.editorconfig
+/.prettierrc
+/.vscode/
