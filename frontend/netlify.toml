@@ -5,6 +5,11 @@
   force = true
 
 [[redirects]]
+  from = "/:shortCode"
+  to = "https://url-shortner-z95x.onrender.com/:shortCode"
+  status = 200
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200

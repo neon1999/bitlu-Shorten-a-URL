@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -44,12 +43,9 @@ public class UrlShortenerController {
 		}
 
 		String shortCode = urlShortenerService.create(request.getLongUrl());
-		URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
-				.path("/{shortCode}")
-				.buildAndExpand(shortCode)
-				.toUri();
-		return ResponseEntity.created(location)
-				.body(new UrlResponseDTO(location.toString()));
+		String shortUrl = "https://bitlu.netlify.app/" + shortCode;
+		return ResponseEntity.created(URI.create(shortUrl))
+				.body(new UrlResponseDTO(shortUrl));
 	}
 
 	@GetMapping("{shortCode}")
