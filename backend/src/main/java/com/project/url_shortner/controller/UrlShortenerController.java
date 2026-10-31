@@ -44,7 +44,7 @@ public class UrlShortenerController {
 		}
 
 		String shortCode = urlShortenerService.create(request.getLongUrl());
-		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+		URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
 				.path("/{shortCode}")
 				.buildAndExpand(shortCode)
 				.toUri();
