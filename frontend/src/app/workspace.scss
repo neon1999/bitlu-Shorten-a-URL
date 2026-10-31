@@ -25,9 +25,17 @@
 	gap: 11px;
 	color: var(--ink);
 	font-family: var(--display-font);
-	font-size: 21px;
-	font-weight: 700;
 	text-decoration: none;
+}
+
+.brand-name {
+	font-size: 23px;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.brand-accent {
+	color: var(--coral);
 }
 
 .brand-mark {
