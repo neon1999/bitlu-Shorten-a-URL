@@ -35,6 +35,7 @@ build/
 # Local environment variables
 .env
 .env.example
+/render.env
 .settings.json
 launch.json
 
