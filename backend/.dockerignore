@@ -1,0 +1,9 @@
+.git
+.idea
+.vscode
+target
+load-tests
+database
+docker-compose.k6.yml
+.env
+.env.*
